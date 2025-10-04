@@ -191,10 +191,13 @@ export function Dashboard({ userData }: DashboardProps) {
         </CardHeader>
         <CardContent>
           <p className="text-sm">
-            📈 Consider increasing prices on Pig Finisher by 5% - demand is high and competitor prices allow it.
+            📊 <strong>Demand Prediction:</strong> Get AI-powered demand forecasts for all your animal feed products
           </p>
           <p className="text-sm mt-2">
-            📦 Restock Broiler Starter and Fish Meal by tomorrow to avoid stockouts during weekend farmer visits.
+            💰 <strong>Pricing Suggestions:</strong> Optimize your prices for maximum profit with intelligent recommendations
+          </p>
+          <p className="text-sm mt-2">
+            📈 Check the <strong>Business Insights</strong> page for detailed AI recommendations for each product
           </p>
         </CardContent>
       </Card>
