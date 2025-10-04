@@ -6,6 +6,8 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 interface InventoryItem {
   id: string;
@@ -93,6 +95,17 @@ export function InventoryManager() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddItem, setShowAddItem] = useState(false);
 
+  // New item form state
+  const [newItem, setNewItem] = useState({
+    name: '',
+    category: '',
+    currentStock: 0,
+    minimumThreshold: 0,
+    maximumCapacity: 0,
+    unitPrice: 0,
+    supplier: ''
+  });
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-KE', {
       style: 'currency',
@@ -123,6 +136,70 @@ export function InventoryManager() {
   const totalValue = inventory.reduce((sum, item) => sum + (item.currentStock * item.unitPrice), 0);
   const totalItems = inventory.reduce((sum, item) => sum + item.currentStock, 0);
 
+  const handleAddItem = () => {
+    // Validation
+    if (!newItem.name || !newItem.category || !newItem.supplier) {
+      alert('Please fill in all required fields (Name, Category, Supplier)');
+      return;
+    }
+
+    if (newItem.currentStock < 0 || newItem.minimumThreshold < 0 || newItem.maximumCapacity <= 0 || newItem.unitPrice < 0) {
+      alert('Please enter valid numbers (Stock levels cannot be negative, maximum capacity must be greater than 0)');
+      return;
+    }
+
+    if (newItem.currentStock > newItem.maximumCapacity) {
+      alert('Current stock cannot exceed maximum capacity');
+      return;
+    }
+
+    if (newItem.minimumThreshold > newItem.maximumCapacity) {
+      alert('Minimum threshold cannot exceed maximum capacity');
+      return;
+    }
+
+    // Create new item
+    const item: InventoryItem = {
+      id: Date.now().toString(),
+      name: newItem.name,
+      category: newItem.category,
+      currentStock: newItem.currentStock,
+      minimumThreshold: newItem.minimumThreshold,
+      maximumCapacity: newItem.maximumCapacity,
+      unitPrice: newItem.unitPrice,
+      supplier: newItem.supplier,
+      lastRestocked: new Date()
+    };
+
+    setInventory(prev => [...prev, item]);
+
+    // Reset form
+    setNewItem({
+      name: '',
+      category: '',
+      currentStock: 0,
+      minimumThreshold: 0,
+      maximumCapacity: 0,
+      unitPrice: 0,
+      supplier: ''
+    });
+
+    setShowAddItem(false);
+  };
+
+  const handleCancelAdd = () => {
+    setNewItem({
+      name: '',
+      category: '',
+      currentStock: 0,
+      minimumThreshold: 0,
+      maximumCapacity: 0,
+      unitPrice: 0,
+      supplier: ''
+    });
+    setShowAddItem(false);
+  };
+
   return (
     <div className="p-4 space-y-4">
       {/* Header */}
@@ -131,14 +208,119 @@ export function InventoryManager() {
           <h2>Inventory Manager</h2>
           <p className="text-muted-foreground text-sm">Mfumo wa kuhifadhi bidhaa / Stock management</p>
         </div>
-        <Button 
-          onClick={() => setShowAddItem(!showAddItem)}
-          size="sm"
-          className="flex items-center gap-2"
-        >
-          <Plus className="w-4 h-4" />
-          Add Item
-        </Button>
+        <Dialog open={showAddItem} onOpenChange={setShowAddItem}>
+          <DialogTrigger asChild>
+            <Button size="sm" className="flex items-center gap-2">
+              <Plus className="w-4 h-4" />
+              Add Item
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Add New Inventory Item</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="itemName">Product Name *</Label>
+                <Input
+                  id="itemName"
+                  placeholder="e.g., Dairy Meal 50kg"
+                  value={newItem.name}
+                  onChange={(e) => setNewItem(prev => ({ ...prev, name: e.target.value }))}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="itemCategory">Category *</Label>
+                <Select value={newItem.category} onValueChange={(value) => setNewItem(prev => ({ ...prev, category: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Dairy Feed">Dairy Feed</SelectItem>
+                    <SelectItem value="Poultry Feed">Poultry Feed</SelectItem>
+                    <SelectItem value="Swine Feed">Swine Feed</SelectItem>
+                    <SelectItem value="Aquaculture">Aquaculture</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="currentStock">Current Stock</Label>
+                  <Input
+                    id="currentStock"
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    value={newItem.currentStock || ''}
+                    onChange={(e) => setNewItem(prev => ({ ...prev, currentStock: parseInt(e.target.value) || 0 }))}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="unitPrice">Unit Price (KES)</Label>
+                  <Input
+                    id="unitPrice"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="0"
+                    value={newItem.unitPrice || ''}
+                    onChange={(e) => setNewItem(prev => ({ ...prev, unitPrice: parseFloat(e.target.value) || 0 }))}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="minThreshold">Minimum Threshold</Label>
+                  <Input
+                    id="minThreshold"
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    value={newItem.minimumThreshold || ''}
+                    onChange={(e) => setNewItem(prev => ({ ...prev, minimumThreshold: parseInt(e.target.value) || 0 }))}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="maxCapacity">Maximum Capacity</Label>
+                  <Input
+                    id="maxCapacity"
+                    type="number"
+                    min="1"
+                    placeholder="0"
+                    value={newItem.maximumCapacity || ''}
+                    onChange={(e) => setNewItem(prev => ({ ...prev, maximumCapacity: parseInt(e.target.value) || 0 }))}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="supplier">Supplier *</Label>
+                <Input
+                  id="supplier"
+                  placeholder="e.g., Coopers Kenya Ltd"
+                  value={newItem.supplier}
+                  onChange={(e) => setNewItem(prev => ({ ...prev, supplier: e.target.value }))}
+                />
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                <Button onClick={handleAddItem} className="flex-1">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Item
+                </Button>
+                <Button variant="outline" onClick={handleCancelAdd} className="flex-1">
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Quick Stats */}
