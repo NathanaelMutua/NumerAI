@@ -1,5 +1,5 @@
-import React from 'react';
-import { TrendingUp, TrendingDown, AlertTriangle, DollarSign, Package, Users } from 'lucide-react';
+import React, { useState } from 'react';
+import { TrendingUp, TrendingDown, AlertTriangle, DollarSign, Package, Users, Lightbulb, Target, Truck, Heart, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
@@ -36,7 +36,37 @@ const mockData = {
   ]
 };
 
+// Growth tips for agrovet businesses
+const growthTips = [
+  {
+    icon: Target,
+    title: "Customer Loyalty Program",
+    tip: "Offer loyalty cards for repeat farmers - give 1 free bag after every 10 purchases",
+    impact: "High"
+  },
+  {
+    icon: Truck,
+    title: "Delivery Service",
+    tip: "Start free delivery for orders above KES 5,000 within 10km radius",
+    impact: "Medium"
+  },
+  {
+    icon: Heart,
+    title: "Farmer Education",
+    tip: "Host free monthly workshops on animal nutrition and feed management",
+    impact: "High"
+  },
+  {
+    icon: Lightbulb,
+    title: "Bulk Discounts",
+    tip: "Offer 5-15% discount for bulk orders (5+ bags) to encourage larger purchases",
+    impact: "Medium"
+  }
+];
+
 export function Dashboard({ userData }: DashboardProps) {
+  const [showGrowthTips, setShowGrowthTips] = useState(false);
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-KE', {
       style: 'currency',
@@ -180,7 +210,7 @@ export function Dashboard({ userData }: DashboardProps) {
       </Card>
 
       {/* AI Insights */}
-      <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+      <Card>
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2">
             <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
@@ -200,6 +230,61 @@ export function Dashboard({ userData }: DashboardProps) {
             📈 Check the <strong>Business Insights</strong> page for detailed AI recommendations for each product
           </p>
         </CardContent>
+      </Card>
+
+      {/* Business Growth Tips */}
+      <Card>
+        <CardHeader
+          className="pb-2 cursor-pointer hover:bg-gray-50 transition-colors"
+          onClick={() => setShowGrowthTips(!showGrowthTips)}
+        >
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Lightbulb className="w-5 h-5 text-green-600" />
+              Business Growth Tips
+            </div>
+            {showGrowthTips ? (
+              <ChevronUp className="w-4 h-4 text-gray-500" />
+            ) : (
+              <ChevronDown className="w-4 h-4 text-gray-500" />
+            )}
+          </CardTitle>
+        </CardHeader>
+        {showGrowthTips && (
+          <CardContent className="space-y-3">
+            {growthTips.map((tip, index) => {
+              const IconComponent = tip.icon;
+              return (
+                <div key={index} className="flex gap-3 p-3 bg-gray-50 rounded-lg border">
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <IconComponent className="w-4 h-4 text-green-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <h4 className="font-medium text-sm">{tip.title}</h4>
+                      <Badge
+                        variant="outline"
+                        className={`text-xs ${
+                          tip.impact === 'High'
+                            ? 'bg-green-100 text-green-700 border-green-300'
+                            : 'bg-yellow-100 text-yellow-700 border-yellow-300'
+                        }`}
+                      >
+                        {tip.impact} Impact
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-gray-600 leading-relaxed">{tip.tip}</p>
+                  </div>
+                </div>
+              );
+            })}
+            <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
+              <p className="text-xs text-green-800 text-center">
+                💡 <strong>Pro Tip:</strong> Start with 1-2 tips that match your current capacity and measure their impact after 30 days
+              </p>
+            </div>
+          </CardContent>
+        )}
       </Card>
     </div>
   );

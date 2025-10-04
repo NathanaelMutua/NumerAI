@@ -45,6 +45,19 @@ interface LoanEligibility {
   };
 }
 
+interface SACCO {
+  id: string;
+  name: string;
+  description: string;
+  location: string;
+  memberCount: number;
+  maxLoanAmount: number;
+  interestRate: number;
+  requirements: string[];
+  compatibilityScore: number;
+  logo: string;
+}
+
 const mockUserData: UserData = {
   firstName: 'Grace',
   lastName: 'Wanjiku',
@@ -74,6 +87,69 @@ const mockLoanData: LoanEligibility = {
   }
 };
 
+const mockSACCOs: SACCO[] = [
+  {
+    id: '1',
+    name: 'Nairobi Business SACCO',
+    description: 'Leading SACCO for Nairobi business owners with competitive rates',
+    location: 'Nairobi CBD',
+    memberCount: 2500,
+    maxLoanAmount: 100000,
+    interestRate: 10,
+    requirements: ['3+ years in business', 'Monthly turnover > KES 50,000', 'Good credit history'],
+    compatibilityScore: 92,
+    logo: '🏢'
+  },
+  {
+    id: '2',
+    name: 'Kenya Agrovet SACCO',
+    description: 'Specialized SACCO for agricultural and agrovet businesses',
+    location: 'Nakuru',
+    memberCount: 1800,
+    maxLoanAmount: 75000,
+    interestRate: 11,
+    requirements: ['Agrovet license', '2+ years experience', 'Regular agricultural suppliers'],
+    compatibilityScore: 88,
+    logo: '🌾'
+  },
+  {
+    id: '3',
+    name: 'Cooperative Bank SACCO',
+    description: 'Large cooperative with extensive branch network',
+    location: 'Nationwide',
+    memberCount: 5000,
+    maxLoanAmount: 150000,
+    interestRate: 12,
+    requirements: ['Business registration', '6 months bank statements', 'Collateral or guarantor'],
+    compatibilityScore: 75,
+    logo: '🏦'
+  },
+  {
+    id: '4',
+    name: 'Women Enterprise SACCO',
+    description: 'SACCO focused on women-owned businesses',
+    location: 'Nairobi & Mombasa',
+    memberCount: 3200,
+    maxLoanAmount: 60000,
+    interestRate: 9,
+    requirements: ['Women-owned business', '1+ year in operation', 'Business plan'],
+    compatibilityScore: 85,
+    logo: '👩‍💼'
+  },
+  {
+    id: '5',
+    name: 'Youth Enterprise SACCO',
+    description: 'Supporting young entrepreneurs under 35 years',
+    location: 'Multiple locations',
+    memberCount: 1500,
+    maxLoanAmount: 40000,
+    interestRate: 8,
+    requirements: ['Under 35 years', 'Business registration', 'Youth enterprise certificate'],
+    compatibilityScore: 70,
+    logo: '青年'
+  }
+];
+
 const achievements = [
   { title: 'Consistent Earner', description: '6 months of steady revenue', icon: Trophy, earned: true },
   { title: 'Payment Master', description: 'No late payments in 3 months', icon: CheckCircle, earned: true },
@@ -96,6 +172,7 @@ export function UserProfile({ initialUserData, onLogout }: UserProfileProps) {
   const [mobileMoneyData, setMobileMoneyData] = useState<MobileMoneyData>(mockMobileMoneyData);
   const [isEditingMobileMoney, setIsEditingMobileMoney] = useState(false);
   const [editedMobileMoneyData, setEditedMobileMoneyData] = useState<MobileMoneyData>(mockMobileMoneyData);
+  const [showSACCOSelection, setShowSACCOSelection] = useState(false);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-KE', {
@@ -115,6 +192,20 @@ export function UserProfile({ initialUserData, onLogout }: UserProfileProps) {
     if (score >= 80) return 'Excellent';
     if (score >= 60) return 'Good';
     return 'Fair';
+  };
+
+  const getSACCOCompatibilityColor = (score: number) => {
+    if (score >= 85) return 'text-green-600 bg-green-100';
+    if (score >= 70) return 'text-blue-600 bg-blue-100';
+    if (score >= 50) return 'text-yellow-600 bg-yellow-100';
+    return 'text-red-600 bg-red-100';
+  };
+
+  const getSACCOCompatibilityLabel = (score: number) => {
+    if (score >= 85) return 'Excellent Match';
+    if (score >= 70) return 'Good Match';
+    if (score >= 50) return 'Fair Match';
+    return 'Low Match';
   };
 
   const handleSaveProfile = () => {
@@ -516,41 +607,125 @@ export function UserProfile({ initialUserData, onLogout }: UserProfileProps) {
             </CardHeader>
             <CardContent>
               {loanData.eligible ? (
-                <div className="space-y-3">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center">
-                      <p className="text-2xl font-medium text-green-600">
-                        {formatCurrency(loanData.maxAmount)}
+                showSACCOSelection ? (
+                  <div className="space-y-4">
+                    <div className="text-center mb-4">
+                      <h3 className="font-medium text-green-700 mb-2">Choose Your SACCO</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Select the SACCO that best matches your business needs
                       </p>
-                      <p className="text-xs text-muted-foreground">Maximum Amount</p>
                     </div>
+
+                    <div className="space-y-3 max-h-96 overflow-y-auto">
+                      {mockSACCOs
+                        .sort((a, b) => b.compatibilityScore - a.compatibilityScore)
+                        .map((sacco) => (
+                        <div key={sacco.id} className="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                          <div className="flex items-start gap-3">
+                            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-lg">
+                              {sacco.logo}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between mb-2">
+                                <h4 className="font-medium text-sm">{sacco.name}</h4>
+                                <div className={`px-2 py-1 rounded-full text-xs font-medium ${getSACCOCompatibilityColor(sacco.compatibilityScore)}`}>
+                                  {sacco.compatibilityScore}% Match
+                                </div>
+                              </div>
+
+                              <p className="text-xs text-muted-foreground mb-2">{sacco.description}</p>
+
+                              <div className="grid grid-cols-2 gap-4 mb-3">
+                                <div>
+                                  <p className="text-xs text-muted-foreground">Max Loan</p>
+                                  <p className="font-medium text-sm">{formatCurrency(sacco.maxLoanAmount)}</p>
+                                </div>
+                                <div>
+                                  <p className="text-xs text-muted-foreground">Interest Rate</p>
+                                  <p className="font-medium text-sm">{sacco.interestRate}%</p>
+                                </div>
+                              </div>
+
+                              <div className="mb-3">
+                                <p className="text-xs font-medium text-muted-foreground mb-1">Requirements:</p>
+                                <div className="flex flex-wrap gap-1">
+                                  {sacco.requirements.slice(0, 2).map((req, index) => (
+                                    <Badge key={index} variant="outline" className="text-xs">
+                                      {req}
+                                    </Badge>
+                                  ))}
+                                  {sacco.requirements.length > 2 && (
+                                    <Badge variant="outline" className="text-xs">
+                                      +{sacco.requirements.length - 2} more
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className="flex items-center justify-between">
+                                <div className="text-xs text-muted-foreground">
+                                  📍 {sacco.location} • 👥 {sacco.memberCount.toLocaleString()} members
+                                </div>
+                                <Button size="sm" className="text-xs">
+                                  Apply Here
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="pt-3 border-t">
+                      <Button
+                        variant="outline"
+                        onClick={() => setShowSACCOSelection(false)}
+                        className="w-full"
+                      >
+                        Back to Loan Summary
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="text-center">
+                        <p className="text-2xl font-medium text-green-600">
+                          {formatCurrency(loanData.maxAmount)}
+                        </p>
+                        <p className="text-xs text-muted-foreground">Maximum Amount</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-2xl font-medium text-green-600">
+                          {loanData.interestRate}%
+                        </p>
+                        <p className="text-xs text-muted-foreground">Interest Rate</p>
+                      </div>
+                    </div>
+
                     <div className="text-center">
-                      <p className="text-2xl font-medium text-green-600">
-                        {loanData.interestRate}%
+                      <p className="text-sm text-muted-foreground">
+                        Loan Term: {loanData.term} months
                       </p>
-                      <p className="text-xs text-muted-foreground">Interest Rate</p>
                     </div>
-                  </div>
-                  
-                  <div className="text-center">
-                    <p className="text-sm text-muted-foreground">
-                      Loan Term: {loanData.term} months
-                    </p>
-                  </div>
 
-                  <div className="p-3 bg-white/70 rounded-lg">
-                    <p className="text-xs text-green-700 mb-2">
-                      🎉 Congratulations! You're eligible for a business loan.
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Monthly repayment would be approximately {formatCurrency(Math.round((loanData.maxAmount * (1 + loanData.interestRate / 100)) / loanData.term))}
-                    </p>
-                  </div>
+                    <div className="p-3 bg-white/70 rounded-lg">
+                      <p className="text-xs text-green-700 mb-2">
+                        🎉 Congratulations! You're eligible for a business loan.
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Monthly repayment would be approximately {formatCurrency(Math.round((loanData.maxAmount * (1 + loanData.interestRate / 100)) / loanData.term))}
+                      </p>
+                    </div>
 
-                  <Button className="w-full">
-                    Apply for Loan
-                  </Button>
-                </div>
+                    <Button
+                      className="w-full"
+                      onClick={() => setShowSACCOSelection(true)}
+                    >
+                      Apply for Loan
+                    </Button>
+                  </div>
+                )
               ) : (
                 <div className="text-center">
                   <p className="text-sm text-red-600 mb-2">
