@@ -25,14 +25,19 @@ const mockData = {
   inventoryAlerts: 3,
   weeklyGrowth: 12.5,
   topProducts: [
-    { name: 'Dairy Meal 50kg', sold: 24, revenue: 12000 },
-    { name: 'Layers Mash 50kg', sold: 18, revenue: 9000 },
-    { name: 'Pig Finisher 50kg', sold: 15, revenue: 15000 },
+    { name: 'Chick Mash 50kg', sold: 45, revenue: 22500, category: 'Poultry Feed' },
+    { name: 'Layers Feed 50kg', sold: 38, revenue: 19000, category: 'Poultry Feed' },
+    { name: 'Growers Feed 50kg', sold: 32, revenue: 16000, category: 'Poultry Feed' },
+    { name: 'Dairy Meal 50kg', sold: 24, revenue: 12000, category: 'Livestock Feed' },
+    { name: 'Pig Finisher 50kg', sold: 15, revenue: 15000, category: 'Livestock Feed' },
   ],
   lowStockItems: [
-    { name: 'Broiler Starter 50kg', stock: 5, threshold: 20 },
-    { name: 'Fish Meal 25kg', stock: 8, threshold: 25 },
-    { name: 'Calf Milk Replacer 20kg', stock: 12, threshold: 30 },
+    { name: 'Chick Mash 50kg', stock: 15, threshold: 50, category: 'Poultry Feed' },
+    { name: 'Layers Mash 50kg', stock: 22, threshold: 60, category: 'Poultry Feed' },
+    { name: 'Growers Mash 50kg', stock: 18, threshold: 45, category: 'Poultry Feed' },
+    { name: 'Broiler Starter 50kg', stock: 5, threshold: 20, category: 'Poultry Feed' },
+    { name: 'Fish Meal 25kg', stock: 8, threshold: 25, category: 'Aquaculture' },
+    { name: 'Calf Milk Replacer 20kg', stock: 12, threshold: 30, category: 'Livestock Feed' },
   ]
 };
 
@@ -40,26 +45,26 @@ const mockData = {
 const growthTips = [
   {
     icon: Target,
-    title: "Customer Loyalty Program",
-    tip: "Offer loyalty cards for repeat farmers - give 1 free bag after every 10 purchases",
+    title: "Poultry Feed Focus",
+    tip: "Promote chick mash, layers mash, and growers mash as your premium poultry feed line - these are your best-selling products with highest demand",
     impact: "High"
   },
   {
     icon: Truck,
-    title: "Delivery Service",
-    tip: "Start free delivery for orders above KES 5,000 within 10km radius",
+    title: "Bulk Poultry Orders",
+    tip: "Offer volume discounts on 10+ bags of layers mash - many farmers buy in bulk monthly",
     impact: "Medium"
   },
   {
     icon: Heart,
-    title: "Farmer Education",
-    tip: "Host free monthly workshops on animal nutrition and feed management",
+    title: "Feed Quality Guarantee",
+    tip: "Highlight that your chick mash and growers mash meet KEB standards for optimal chick growth",
     impact: "High"
   },
   {
-    icon: Lightbulb,
-    title: "Bulk Discounts",
-    tip: "Offer 5-15% discount for bulk orders (5+ bags) to encourage larger purchases",
+    icon: Users,
+    title: "Farmer Education",
+    tip: "Host free sessions teaching proper poultry feed ratios - position yourself as the expert",
     impact: "Medium"
   }
 ];
@@ -174,11 +179,23 @@ export function Dashboard({ userData }: DashboardProps) {
         <CardContent className="space-y-3">
           {mockData.topProducts.map((product, index) => (
             <div key={index} className="flex justify-between items-center">
-              <div>
+              <div className="flex-1">
                 <p className="text-sm font-medium">{product.name}</p>
-                <p className="text-xs text-muted-foreground">{product.sold} units sold</p>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="text-xs">
+                    {product.category}
+                  </Badge>
+                  <p className="text-xs text-muted-foreground">{product.sold} units sold</p>
+                </div>
               </div>
-              <p className="font-medium">{formatCurrency(product.revenue)}</p>
+              <div className="text-right">
+                <p className="font-medium">{formatCurrency(product.revenue)}</p>
+                {product.category === 'Poultry Feed' && (
+                  <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">
+                    Primary Feed
+                  </Badge>
+                )}
+              </div>
             </div>
           ))}
         </CardContent>
@@ -195,15 +212,27 @@ export function Dashboard({ userData }: DashboardProps) {
         <CardContent className="space-y-3">
           {mockData.lowStockItems.map((item, index) => (
             <div key={index} className="flex justify-between items-center">
-              <div>
+              <div className="flex-1">
                 <p className="text-sm font-medium">{item.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {item.stock} left (min: {item.threshold})
-                </p>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="text-xs">
+                    {item.category}
+                  </Badge>
+                  <p className="text-xs text-muted-foreground">
+                    {item.stock} left (min: {item.threshold})
+                  </p>
+                </div>
               </div>
-              <Badge variant="destructive" className="text-xs">
-                Low Stock
-              </Badge>
+              <div className="text-right">
+                <Badge variant="destructive" className="text-xs">
+                  Low Stock
+                </Badge>
+                {item.category === 'Poultry Feed' && (
+                  <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 mt-1 block">
+                    Priority Feed
+                  </Badge>
+                )}
+              </div>
             </div>
           ))}
         </CardContent>

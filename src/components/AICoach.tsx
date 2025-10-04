@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bot, Send, User, Lightbulb, TrendingUp, Globe, MessageCircle } from 'lucide-react';
+import { Bot, Send, User, Lightbulb, TrendingUp, Globe, MessageCircle, AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -22,20 +22,7 @@ const initialMessages: Message[] = [
     timestamp: new Date(Date.now() - 1000 * 60 * 5),
     language: 'en'
   },
-  {
-    id: '2',
-    content: 'Naomba ushauri kuhusu bei za bidhaa zangu. Ni vipi niweze kuongeza faida?',
-    isBot: false,
-    timestamp: new Date(Date.now() - 1000 * 60 * 4),
-    language: 'sw'
-  },
-  {
-    id: '3',
-    content: 'Hii ni swali nzuri! Kuongeza faida, unaweza: 1) Kuchunguza bei za washindani 2) Kuongeza thamani kwa bidhaa zako 3) Kupunguza gharama za uongozaji. Kwa mfano, kama unamuuza unga, unaweza kuwa na mfuko wa plastic wa kibinafsi au kutoa delivery bure.',
-    isBot: true,
-    timestamp: new Date(Date.now() - 1000 * 60 * 3),
-    language: 'sw'
-  }
+  //=
 ];
 
 const quickActions = [
@@ -46,6 +33,24 @@ const quickActions = [
 ];
 
 const businessInsights = [
+  {
+    title: 'Chick Mash Demand Prediction',
+    insight: 'AI predicts 35% increase in chick mash demand next week due to new poultry farmers in your area. Stock up now to capture this growing market.',
+    action: 'Increase chick mash inventory',
+    type: 'prediction'
+  },
+  {
+    title: 'Layers Mash Pricing Opportunity',
+    insight: 'Current layers mash prices are 12% below optimal market rate. Consider increasing price to KES 4,200 per 70kg bag for better margins.',
+    action: 'Optimize layers mash pricing',
+    type: 'pricing'
+  },
+  {
+    title: 'Growers Mash Stock Alert',
+    insight: 'Growers mash stock is running low. Current inventory will last only 4 more days based on recent sales trends.',
+    action: 'Reorder growers mash immediately',
+    type: 'alert'
+  },
   {
     title: 'Peak Sales Hours',
     insight: 'Your best sales are between 6-8 PM. Consider extending hours or promoting during this time.',
@@ -77,53 +82,34 @@ export function AICoach() {
   };
 
   const generateBotResponse = async (userMessage: string) => {
-    // Simple response generation based on keywords
-    const message = userMessage.toLowerCase();
     try {
-      const response = await fetch(`https://unwarned-nonspheric-georgeanna.ngrok-free.dev/ask`, {method: `POST`, headers: { 'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({"question": message})
-  })
-  const data = await response.json()
-  console.log(data.answer!)
-  return data.answer!
-  } catch (e) {
-    console.log(e)
-  }
- 
+      const response = await fetch('https://unwarned-nonspheric-georgeanna.ngrok-free.dev/ask', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({"question": userMessage})
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.answer) {
+        return data.answer;
+      } else {
+        throw new Error('No answer received from API');
+      }
+    } catch (error) {
+      console.error('Error calling AI API:', error);
+      // Return a fallback response in case of API failure
+      return language === 'sw'
+        ? 'Samahani, nimepata tatizo la kiufundi. Tafadhali jaribu tena baadaye.'
+        : 'Sorry, I encountered a technical issue. Please try again later.';
+    }
   };
-
-  const generateQuickBotRepsonse = (userMessage: string) => {
-    const message = userMessage.toLowerCase()
-      if (message.includes('pricing') || message.includes('bei')) {
-      return language === 'sw' 
-        ? 'Kuhusu bei: 1) Chunguza bei za washindani 2) Hesabu gharama zako + faida 20-30% 3) Zingatia ubora wa bidhaa yako. Je, unahitaji msaada zaidi?'
-        : 'For pricing: 1) Research competitor prices 2) Calculate your costs + 20-30% profit 3) Consider your product quality. Need more specific help?';
-    }
-    
-    if (message.includes('marketing') || message.includes('masoko')) {
-      return language === 'sw'
-        ? 'Mikakati ya masoko: 1) Tumia WhatsApp kwa wateja 2) Andika kwa mlango wako "M-Pesa Inakubaliwa" 3) Toa punguzo kwa wateja wa kawaida 4) Shiriki picha za bidhaa za ubora social media.'
-        : 'Marketing strategies: 1) Use WhatsApp for customers 2) Put "M-Pesa Accepted" sign 3) Offer loyalty discounts 4) Share quality product photos on social media.';
-    }
-    
-    if (message.includes('inventory') || message.includes('stock')) {
-      return language === 'sw'
-        ? 'Usimamizi wa stock: 1) Fuatilia bidhaa zinazoishe haraka 2) Weka alama za kumbuka kwa bidhaa za muhimu 3) Unda uhusiano mzuri na wasambazaji 4) Chunguza data ya mauzo ya wiki zilizopita.'
-        : 'Inventory management: 1) Track fast-moving items 2) Set reminders for essential products 3) Build good supplier relationships 4) Analyze past weeks\' sales data.';
-    }
-    
-    if (message.includes('mpesa') || message.includes('malipo')) {
-      return language === 'sw'
-        ? 'M-Pesa kwa biashara: 1) Fungua akaunti ya Paybill au Till Number 2) Weka nembo ya M-Pesa mahali paonekanapo 3) Fundisha watumishi jinsi ya kutumia 4) Fuatilia malipo yote kwa ukaguzi.'
-        : 'M-Pesa for business: 1) Open Paybill or Till Number account 2) Display M-Pesa logo prominently 3) Train staff on usage 4) Track all payments for accounting.';
-    }
-    
-    return language === 'sw'
-      ? 'Nimeelewi swali lako. Je, unaweza kunieleza zaidi ili nikupe msaada wa kina zaidi?'
-      : 'I understand your question. Could you tell me more so I can give you more detailed help?';
-
-  }
 
   const handleSendMessage = async() => {
     if (!inputMessage.trim()) return;
@@ -156,7 +142,7 @@ export function AICoach() {
     }, 1000 + Math.random() * 2000);
   };
 
-  const handleQuickAction = (query: string) => {
+  const handleQuickAction = async (query: string) => {
     if (!query.trim()) return;
 
     const userMessage: Message = {
@@ -170,19 +156,39 @@ export function AICoach() {
     setMessages(prev => [...prev, userMessage]);
     setIsTyping(true);
 
-    // Simulate bot typing and response
-    setTimeout(() => {
-      const botResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        content: generateQuickBotRepsonse(query),
-        isBot: true,
-        timestamp: new Date(),
-        language
-      };
-      
-      setMessages(prev => [...prev, botResponse]);
-      setIsTyping(false);
-    }, 1000 + Math.random() * 2000);
+    try {
+      const response = await generateBotResponse(query);
+
+      setTimeout(() => {
+        const botResponse: Message = {
+          id: (Date.now() + 1).toString(),
+          content: response,
+          isBot: true,
+          timestamp: new Date(),
+          language
+        };
+
+        setMessages(prev => [...prev, botResponse]);
+        setIsTyping(false);
+      }, 1000 + Math.random() * 2000);
+
+    } catch (error) {
+      console.error('Error getting AI response:', error);
+      setTimeout(() => {
+        const botResponse: Message = {
+          id: (Date.now() + 1).toString(),
+          content: language === 'sw'
+            ? 'Samahani, nimepata tatizo la kiufundi. Tafadhali jaribu tena baadaye.'
+            : 'Sorry, I encountered a technical issue. Please try again later.',
+          isBot: true,
+          timestamp: new Date(),
+          language
+        };
+
+        setMessages(prev => [...prev, botResponse]);
+        setIsTyping(false);
+      }, 1000 + Math.random() * 2000);
+    }
   };
 
   return (
@@ -321,11 +327,32 @@ export function AICoach() {
         <TabsContent value="insights" className="space-y-4">
           <div className="space-y-3">
             {businessInsights.map((insight, index) => (
-              <Card key={index}>
+              <Card key={index} className={
+                insight.type === 'prediction' ? 'border-purple-200 bg-purple-50' :
+                insight.type === 'pricing' ? 'border-green-200 bg-green-50' :
+                insight.type === 'alert' ? 'border-red-200 bg-red-50' :
+                'border-blue-200 bg-blue-50'
+              }>
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-medium">{insight.title}</h3>
-                    <Badge variant="secondary">AI Insight</Badge>
+                    <h3 className="font-medium flex items-center gap-2">
+                      {insight.type === 'prediction' && <TrendingUp className="w-4 h-4 text-purple-600" />}
+                      {insight.type === 'pricing' && <TrendingUp className="w-4 h-4 text-green-600" />}
+                      {insight.type === 'alert' && <AlertTriangle className="w-4 h-4 text-red-600" />}
+                      {!insight.type && <Lightbulb className="w-4 h-4 text-blue-600" />}
+                      {insight.title}
+                    </h3>
+                    <Badge variant="secondary" className={
+                      insight.type === 'prediction' ? 'bg-purple-100 text-purple-700' :
+                      insight.type === 'pricing' ? 'bg-green-100 text-green-700' :
+                      insight.type === 'alert' ? 'bg-red-100 text-red-700' :
+                      'bg-blue-100 text-blue-700'
+                    }>
+                      {insight.type === 'prediction' ? 'Demand AI' :
+                       insight.type === 'pricing' ? 'Pricing AI' :
+                       insight.type === 'alert' ? 'Stock Alert' :
+                       'Business AI'}
+                    </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground mb-3">
                     {insight.insight}

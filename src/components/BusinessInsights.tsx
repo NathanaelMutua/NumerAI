@@ -413,39 +413,39 @@ export function BusinessInsights() {
                         <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
                           <div className="flex items-center gap-2 mb-1">
                             <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                            <h4 className="font-medium text-sm text-green-700">Dairy Meal 50kg</h4>
+                            <h4 className="font-medium text-sm text-green-700">Chick Mash 50kg</h4>
                           </div>
                           <p className="text-xs text-green-600 mb-1">
-                            🔼 High demand expected next week (+15% increase)
+                            🔼 High demand expected next week (+35% increase)
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            Based on seasonal trends and farmer purchasing patterns
-                          </p>
-                        </div>
-
-                        <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                          <div className="flex items-center gap-2 mb-1">
-                            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                            <h4 className="font-medium text-sm text-yellow-700">Layers Mash 50kg</h4>
-                          </div>
-                          <p className="text-xs text-yellow-600 mb-1">
-                            ➡️ Stable demand expected (±5% variation)
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Consistent demand from regular poultry farmers
+                            Based on seasonal trends and new poultry farmers in your area
                           </p>
                         </div>
 
                         <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
                           <div className="flex items-center gap-2 mb-1">
                             <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                            <h4 className="font-medium text-sm text-blue-700">Pig Finisher 50kg</h4>
+                            <h4 className="font-medium text-sm text-blue-700">Layers Mash 50kg</h4>
                           </div>
                           <p className="text-xs text-blue-600 mb-1">
-                            📈 Growing demand trend (+8% this month)
+                            ➡️ Stable demand expected (±8% variation)
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            Increasing pig farming activity in your area
+                            Consistent demand from regular poultry farmers
+                          </p>
+                        </div>
+
+                        <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                            <h4 className="font-medium text-sm text-yellow-700">Growers Mash 50kg</h4>
+                          </div>
+                          <p className="text-xs text-yellow-600 mb-1">
+                            📈 Growing demand trend (+15% this month)
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Increasing poultry farming activity in your area
                           </p>
                         </div>
 
@@ -491,13 +491,13 @@ export function BusinessInsights() {
                         <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
                           <div className="flex items-center gap-2 mb-1">
                             <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                            <h4 className="font-medium text-sm text-green-700">Dairy Meal 50kg</h4>
+                            <h4 className="font-medium text-sm text-green-700">Chick Mash 50kg</h4>
                           </div>
                           <p className="text-xs text-green-600 mb-1">
-                            💰 Current: KES 2,500 → Suggested: KES 2,650 (+6%)
+                            💰 Current: KES 2,800 → Suggested: KES 2,950 (+5.4%)
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            High demand allows for price increase without losing customers
+                            High demand for chick feed supports price increase
                           </p>
                         </div>
 
@@ -507,10 +507,23 @@ export function BusinessInsights() {
                             <h4 className="font-medium text-sm text-blue-700">Layers Mash 50kg</h4>
                           </div>
                           <p className="text-xs text-blue-600 mb-1">
-                            ⚖️ Current: KES 2,200 → Maintain current price
+                            ⚖️ Current: KES 2,200 → Suggested: KES 2,300 (+4.5%)
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            Competitive market - price stability recommended
+                            Optimal pricing for steady egg production demand
+                          </p>
+                        </div>
+
+                        <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                            <h4 className="font-medium text-sm text-yellow-700">Growers Mash 50kg</h4>
+                          </div>
+                          <p className="text-xs text-yellow-600 mb-1">
+                            📈 Current: KES 2,400 → Suggested: KES 2,520 (+5%)
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Growing market supports moderate price increase
                           </p>
                         </div>
 
@@ -524,19 +537,6 @@ export function BusinessInsights() {
                           </p>
                           <p className="text-xs text-muted-foreground">
                             Growing demand supports moderate price increase
-                          </p>
-                        </div>
-
-                        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                          <div className="flex items-center gap-2 mb-1">
-                            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                            <h4 className="font-medium text-sm text-red-700">Fish Meal 25kg</h4>
-                          </div>
-                          <p className="text-xs text-red-600 mb-1">
-                            ⚠️ Current: KES 1,800 → Consider reduction to KES 1,700 (-5.5%)
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            High competition - price adjustment may increase volume
                           </p>
                         </div>
                       </div>

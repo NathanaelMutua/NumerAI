@@ -24,13 +24,13 @@ interface InventoryItem {
 const mockInventory: InventoryItem[] = [
   {
     id: '1',
-    name: 'Dairy Meal 50kg',
-    category: 'Dairy Feed',
+    name: 'Chick Mash 50kg',
+    category: 'Poultry Feed',
     currentStock: 45,
     minimumThreshold: 20,
     maximumCapacity: 100,
-    unitPrice: 2500,
-    supplier: 'Coopers Kenya Ltd',
+    unitPrice: 2800,
+    supplier: 'Kenchic Ltd',
     lastRestocked: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3)
   },
   {
@@ -46,6 +46,28 @@ const mockInventory: InventoryItem[] = [
   },
   {
     id: '3',
+    name: 'Growers Mash 50kg',
+    category: 'Poultry Feed',
+    currentStock: 25,
+    minimumThreshold: 15,
+    maximumCapacity: 60,
+    unitPrice: 2400,
+    supplier: 'Kenchic Ltd',
+    lastRestocked: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2)
+  },
+  {
+    id: '4',
+    name: 'Dairy Meal 50kg',
+    category: 'Dairy Feed',
+    currentStock: 35,
+    minimumThreshold: 20,
+    maximumCapacity: 100,
+    unitPrice: 2500,
+    supplier: 'Coopers Kenya Ltd',
+    lastRestocked: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1)
+  },
+  {
+    id: '5',
     name: 'Pig Finisher 50kg',
     category: 'Swine Feed',
     currentStock: 25,
@@ -56,7 +78,7 @@ const mockInventory: InventoryItem[] = [
     lastRestocked: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2)
   },
   {
-    id: '4',
+    id: '6',
     name: 'Broiler Starter 50kg',
     category: 'Poultry Feed',
     currentStock: 35,
@@ -67,7 +89,7 @@ const mockInventory: InventoryItem[] = [
     lastRestocked: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1)
   },
   {
-    id: '5',
+    id: '7',
     name: 'Fish Meal 25kg',
     category: 'Aquaculture',
     currentStock: 12,
@@ -78,7 +100,7 @@ const mockInventory: InventoryItem[] = [
     lastRestocked: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5)
   },
   {
-    id: '6',
+    id: '8',
     name: 'Calf Milk Replacer 20kg',
     category: 'Dairy Feed',
     currentStock: 18,
