@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { RotateCcw, DollarSign, Clock, TrendingUp, Users, Package, CheckCircle, Plus, ShoppingCart, Trash2, Edit3 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
@@ -110,8 +110,33 @@ export function SalesTracker() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastRefreshTime, setLastRefreshTime] = useState<Date | null>(null);
   
-  // Orders state
-  const [orders, setOrders] = useState<Order[]>([]);
+  // Orders state - persistent for logged-in users
+  const [orders, setOrders] = useState<Order[]>(() => {
+    // Load orders from localStorage for the current user
+    if (typeof window !== 'undefined') {
+      const savedOrders = localStorage.getItem('numeraai_orders');
+      if (savedOrders) {
+        try {
+          const parsedOrders = JSON.parse(savedOrders);
+          // Convert date strings back to Date objects
+          return parsedOrders.map((order: any) => ({
+            ...order,
+            createdAt: new Date(order.createdAt)
+          }));
+        } catch (e) {
+          console.error('Error loading orders:', e);
+        }
+      }
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('numeraai_orders', JSON.stringify(orders));
+    }
+  }, [orders]);
+
   const [isOrderDialogOpen, setIsOrderDialogOpen] = useState(false);
   const [newOrder, setNewOrder] = useState({
     customerName: '',
@@ -205,7 +230,7 @@ export function SalesTracker() {
   const createOrder = () => {
     if (newOrder.customerName && newOrder.customerPhone && orderItems.length > 0) {
       const order: Order = {
-        id: Date.now().toString(),
+        id: `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, // More unique order ID
         customerName: newOrder.customerName,
         customerPhone: newOrder.customerPhone,
         items: orderItems,
@@ -229,6 +254,10 @@ export function SalesTracker() {
     ));
   };
 
+  const clearCompletedOrders = () => {
+    setOrders(prev => prev.filter(order => order.status !== 'completed'));
+  };
+
   const getStatusColor = (status: Order['status']) => {
     switch (status) {
       case 'pending': return 'bg-yellow-100 text-yellow-700';
@@ -238,6 +267,13 @@ export function SalesTracker() {
       default: return 'bg-gray-100 text-gray-700';
     }
   };
+
+  // Calculate order statistics
+  const pendingOrders = orders.filter(order => order.status === 'pending').length;
+  const completedOrders = orders.filter(order => order.status === 'completed').length;
+  const totalOrderValue = orders
+    .filter(order => order.status === 'completed')
+    .reduce((sum, order) => sum + order.totalAmount, 0);
 
   return (
     <div className="p-4 space-y-4">
@@ -374,14 +410,30 @@ export function SalesTracker() {
           <div className="flex justify-between items-center">
             <div>
               <p className="text-sm text-muted-foreground">Manage customer orders</p>
+              <div className="flex gap-4 mt-1">
+                <span className="text-xs text-yellow-600">Pending: {pendingOrders}</span>
+                <span className="text-xs text-green-600">Completed: {completedOrders}</span>
+                <span className="text-xs text-blue-600">Total: {formatCurrency(totalOrderValue)}</span>
+              </div>
             </div>
-            <Dialog open={isOrderDialogOpen} onOpenChange={setIsOrderDialogOpen}>
-              <DialogTrigger asChild>
-                <Button size="sm" className="flex items-center gap-2">
-                  <Plus className="w-4 h-4" />
-                  New Order
+            <div className="flex gap-2">
+              {completedOrders > 0 && (
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={clearCompletedOrders}
+                  className="text-xs"
+                >
+                  Clear Completed
                 </Button>
-              </DialogTrigger>
+              )}
+              <Dialog open={isOrderDialogOpen} onOpenChange={setIsOrderDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button size="sm" className="flex items-center gap-2">
+                    <Plus className="w-4 h-4" />
+                    New Order
+                  </Button>
+                </DialogTrigger>
               <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
                   <DialogTitle>Create New Order</DialogTitle>
@@ -534,7 +586,8 @@ export function SalesTracker() {
                   </div>
                 </div>
               </DialogContent>
-            </Dialog>
+              </Dialog>
+            </div>
           </div>
 
           {/* Orders List */}

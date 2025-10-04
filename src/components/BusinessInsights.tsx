@@ -452,13 +452,13 @@ export function BusinessInsights() {
                         <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
                           <div className="flex items-center gap-2 mb-1">
                             <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                            <h4 className="font-medium text-sm text-purple-700">Broiler Starter 50kg</h4>
+                            <h4 className="font-medium text-sm text-purple-700">Dairy Meal 50kg</h4>
                           </div>
                           <p className="text-xs text-purple-600 mb-1">
                             🔽 Seasonal dip expected (-12% next 2 weeks)
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            Post-holiday reduction in poultry farming
+                            Post-holiday reduction in dairy farming
                           </p>
                         </div>
                       </div>
